@@ -16,10 +16,11 @@ from ai_agent.utilities.logger import get_utc_logger
 ##############################################################################
 
 class QdrantVectorDatabase(BaseDatabase):
-    def __init__(self, logger: logging.Logger = None) -> None:
+    def __init__(self, logger: logging.Logger = None, timeout: int=120) -> None:
         self.qdrant_client = QdrantClient(
             url = os.getenv('QDRANT_URL'),
             api_key = os.getenv('QDRANT_API_KEY'),
+            timeout=timeout
         )
         
         if logger is None:
@@ -31,7 +32,8 @@ class QdrantVectorDatabase(BaseDatabase):
     def ingest_data(
             self,
             data_points: list[dict[str, any]],
-            collection_name: str
+            collection_name: str,
+            wait_ingest: bool = False
     ) -> None:
         """
         Ingests text and their embeddings into a Qdrant collection.
@@ -93,8 +95,8 @@ class QdrantVectorDatabase(BaseDatabase):
         
         self.qdrant_client.upsert(
             collection_name=collection_name,
-            wait=True,
-            points=points
+            wait=wait_ingest,
+            points=points,
         )
         self.logger.info("Ingestion successful.")
         
