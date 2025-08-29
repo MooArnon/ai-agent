@@ -225,7 +225,6 @@ class QdrantVectorDatabase(BaseDatabase):
                     "created_at": result.payload.get("meta_data", {}).get("created_at")
                 }
             )
-        print(f"results: {results}")
         return results
 
     ##########################################################################
